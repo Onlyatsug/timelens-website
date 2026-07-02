@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:4000/api';
+const API_URL = 'https://timelens-server-psi.vercel.app/api/health';
 
 // ==========================================
 // INTERFACES (Mantidas exatamente iguais)
