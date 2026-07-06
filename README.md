@@ -1,11 +1,113 @@
+# Timelens — Website
 
-  # Create Interaction Project App
+O **Timelens** é uma plataforma web dedicada à preservação de memórias institucionais, comunitárias e coletivas, usando localização geográfica e cronologia como pilares de navegação: cada memória é um post ancorado a um local do campus e a uma linha do tempo.
 
-  This is a code bundle for Create Interaction Project App. The original project is available at https://www.figma.com/design/7SQuUaPKUCdsbZr0GGpurD/Create-Interaction-Project-App.
+Este repositório contém o **frontend** da aplicação, desenvolvido no escopo da disciplina de **Tópicos Especiais em Engenharia de Software**, sob o tema norteador *"Rede Social para Minorias"*, e consome a [API do Timelens](https://github.com/Onlyatsug/timelens-website).
 
-  ## Running the code
+> O layout original foi prototipado no Figma Make e depois evoluído em código.
 
-  Run `npm i` to install the dependencies.
+## Funcionalidades
 
-  Run `npm run dev` to start the development server.
-  
+- **Mapa do campus** como tela inicial, com locais navegáveis (Leaflet)
+- **Linha do tempo** de memórias por local, com filtros por tag, tipo, autor e busca
+- **Criação de memórias** (posts) com foto, data do evento, local e tags
+- **Curtidas e comentários** em cada memória
+- **Notificações** de curtidas/comentários
+- **Perfil de usuário** com as memórias postadas
+- **Autenticação** via Firebase, sincronizada com o backend
+- **Painel administrativo** para gestão de conteúdo
+
+## Stack
+
+- **React 18** + **TypeScript**
+- **Vite** como bundler
+- **React Router** para as rotas
+- **Tailwind CSS 4** + **shadcn/ui** (Radix UI) para os componentes de interface
+- **Firebase Auth** para autenticação
+- **Leaflet / React Leaflet** para o mapa do campus
+- **Motion**, **Recharts**, **Embla Carousel**, entre outras libs de suporte
+
+## Como rodar
+
+```bash
+npm install
+npm run dev
+```
+
+A aplicação sobe por padrão em `http://localhost:5173`.
+
+### Variáveis de ambiente
+
+Crie um arquivo `.env` na raiz com as credenciais do Firebase usadas em `src/lib/firebase.ts`:
+
+```bash
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+```
+
+Por padrão, `src/services/api.ts` aponta para a API em produção (`https://timelens-server-psi.vercel.app/api`). Para rodar contra o [backend](../timelens-backend) localmente, altere a constante `API_URL` desse arquivo para `http://localhost:4000/api`.
+
+## Estrutura
+
+```
+src/
+  main.tsx                      ponto de entrada da aplicação
+  app/
+    App.tsx                     componente raiz, provê o AppProvider e o router
+    routes.ts                   definição das rotas (React Router)
+    components/
+      Root.tsx                  layout comum das telas autenticadas (/app)
+      Auth.tsx                  telas de login/cadastro
+      AppContext.tsx            contexto global: usuário atual, logout, bloqueios
+      HomeMap.tsx / CampusMap.tsx  mapa do campus
+      Timeline.tsx               linha do tempo de memórias por local
+      PostExpanded.tsx           detalhe de uma memória (com comentários)
+      NewMemory.tsx              criação de uma nova memória
+      SearchPage.tsx             busca e filtros
+      ProfilePage.tsx            perfil do usuário
+      NotificationsPage.tsx      notificações
+      AdminPanel.tsx             painel administrativo
+      Header.tsx / BottomNav.tsx / Breadcrumb.tsx  navegação
+      ui/                        componentes shadcn/ui reutilizáveis
+      figma/                     assets exportados do Figma
+  services/
+    api.ts                       tipos + todas as chamadas para o backend
+  lib/
+    firebase.ts                  inicialização do Firebase
+    authService.ts                login, cadastro, logout, observação de sessão
+  styles/                        estilos globais e tema
+```
+
+## Rotas
+
+| Rota | Componente | Descrição |
+|---|---|---|
+| `/` | `Auth` | Login / cadastro |
+| `/app` | `HomeMap` | Mapa do campus (home) |
+| `/app/timeline` | `Timeline` | Linha do tempo geral |
+| `/app/timeline/:locationId` | `Timeline` | Linha do tempo de um local específico |
+| `/app/post/:postId` | `PostExpanded` | Detalhe de uma memória |
+| `/app/new-memory` | `NewMemory` | Criar uma nova memória |
+| `/app/search` | `SearchPage` | Busca e filtros |
+| `/app/profile/:userId` | `ProfilePage` | Perfil do usuário |
+| `/app/notifications` | `NotificationsPage` | Notificações |
+| `/app/admin` | `AdminPanel` | Painel administrativo |
+
+## Integração com o backend
+
+Todas as chamadas HTTP passam por `src/services/api.ts`, que expõe as funções e tipos usados pelos componentes (`getPosts`, `createPost`, `toggleLikePost`, `getNotifications`, `syncUser`, etc.), refletindo 1:1 os endpoints descritos no README do [backend](../timelens-backend).
+
+A autenticação funciona em duas camadas:
+1. **Firebase** cuida do login/cadastro e emite o `idToken`.
+2. O `AppContext` observa o estado de autenticação do Firebase e chama `syncUser` (`POST /auth/sync`) para espelhar/recuperar o usuário correspondente no backend.
+
+## Roadmap / débitos técnicos conhecidos
+
+- [ ] Tornar a `API_URL` configurável via variável de ambiente (`VITE_API_URL`) em vez de hardcoded
+- [ ] Mover o bloqueio de usuários (hoje só em memória no `AppContext`) para o backend
+- [ ] Testes automatizados de componentes e fluxos principais
+- [ ] Revisar acessibilidade e responsividade das telas principais
