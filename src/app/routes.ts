@@ -7,8 +7,8 @@ import { NewMemory } from './pages/NewMemory';
 import { SearchPage } from './pages/SearchPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { NotificationsPage } from './pages/NotificationsPage';
-import { AdminPanel } from './pages/AdminPanel';
 
+import AdminPage from './pages/admin/page';
 import AuthPage from './pages/auth/page';
 
 export const router = createBrowserRouter([
@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
       { path: 'search', Component: SearchPage },
       { path: 'profile/:userId', Component: ProfilePage },
       { path: 'notifications', Component: NotificationsPage },
-      { path: 'admin', Component: AdminPanel },
+      { path: 'admin', Component: AdminPage },
     ],
   },
 ]);

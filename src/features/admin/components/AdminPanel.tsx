@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router';
 import { Users, Shield, Flag, Settings, Trash2, Ban, CheckCircle, AlertTriangle } from 'lucide-react';
-import { getUsers, getPosts, deletePost as apiDeletePost, User, Post } from '../../services/api';
-import { useApp } from '../AppContext';
-import { Breadcrumb } from './Breadcrumb';
+import { getUsers, getPosts, deletePost as apiDeletePost, User, Post } from '../../../services/api';
+import { useApp } from '../../../app/AppContext';
+import { Breadcrumb } from '../../../app/pages/Breadcrumb';
 
 type AdminTab = 'usuarios' | 'conteudo' | 'denuncias' | 'configuracoes';
 
@@ -20,7 +20,7 @@ const MOCK_REPORTS = [
   { id: 'r2', postId: 'p6', reason: 'Informação incorreta', reporter: 'u2', status: 'revisado' },
 ];
 
-export function AdminPanel() {
+export default function AdminPanel() {
   const navigate = useNavigate();
   // blockUser e unblockUser continuam no Context porque não tem endpoint disso na API atual
   const { currentUser, blockUser, unblockUser, blockedUsers }:any = useApp();
